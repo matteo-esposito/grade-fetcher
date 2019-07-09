@@ -2,6 +2,10 @@
 
 App that takes in any Concordia student ID, password and semester from Fall 2016 to Winter 2020 and outputs what is typically seen in the "View My Grades" section of the myconcordia website.
 
+## TODO
+* Exception handling for username, password and semesters
+* Generalization of filepaths (`os.join()`, etc.)
+
 ## Usage
 
 Clone the repo and run the app.
