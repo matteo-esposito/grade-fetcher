@@ -19,7 +19,7 @@ or via this link (Windows/Linux):
 |OS|Link|
 |--|--|
 |Windows 32 bit| [mozilla/geckodriver/win32.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-win32.zip)|
-|Windows 64 bit| [mozilla/geckodriver/win64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-win64.tar.gz)|
+|Windows 64 bit| [mozilla/geckodriver/win64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-win64.zip)|
 |Linux 32 bit| [mozilla/geckodriver/linux32.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz)|
 |Linux 64 bit| [mozilla/geckodriver/linux64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz)|
 
