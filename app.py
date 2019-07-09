@@ -4,6 +4,7 @@ import getpass
 from bs4 import BeautifulSoup
 import pandas as pd 
 import os
+import time
 
 class GradeBot():
     def __init__(self, username, password):
