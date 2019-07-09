@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd 
 import os
 import time
+import sys
 
 class GradeBot():
     def __init__(self, username, password):
@@ -18,14 +19,14 @@ class GradeBot():
         self.username = username
         self.password = password
         opts = webdriver.FirefoxOptions()
-        opts.headless = True
+        opts.headless = False
         self.bot = webdriver.Firefox(options=opts)
 
     def login(self):
         # Goto site
         bot = self.bot
         bot.get("https://my.concordia.ca/psp/upprpr9/?cmd=login&languageCd=ENG")
-        time.sleep(3)
+        time.sleep(1)
 
         # Locate and populate user and pwd fields.
         user_field = bot.find_element_by_class_name('form_login_username')
@@ -35,16 +36,24 @@ class GradeBot():
         user_field.send_keys(self.username)
         pwd_field.send_keys(self.password)
         pwd_field.send_keys(Keys.RETURN)
+        time.sleep(5)
+
+        if bot.current_url == 'https://my.concordia.ca/psp/upprpr9/EMPLOYEE/EMPL/h/?tab=CU_MY_FRONT_PAGE2':
+            pass
+        else:
+            print('Login failed.')
+            print('Re-run the program.')
+            sys.exit(1)
         print("✓ Logged in successfully.")
-        time.sleep(7)
+
+        # Goto student center and find grades
+        bot.find_element_by_xpath('//a[@id="fldra_CU_MY_STUD_CENTRE" and @class="ptntop"]').click()
+        time.sleep(2)
+        bot.find_element_by_xpath('//a[@class="ptntop" and @role="menuitem" and @href="https://my.concordia.ca/psp/upprpr9/EMPLOYEE/EMPL/s/WEBLIB_CONCORD.CU_SIS_INFO.FieldFormula.IScript_Campus_Student_Trans?FolderPath=PORTAL_ROOT_OBJECT.CU_MY_STUD_CENTRE.CAMPUS_STUDENT_TRANSCRIPT&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder"]').click()
+        time.sleep(2)
 
     def goto_grades(self, semester):
         bot = self.bot
-        # Goto student center and find grades
-        bot.find_element_by_xpath('//a[@id="fldra_CU_MY_STUD_CENTRE" and @class="ptntop"]').click()
-        time.sleep(1.5)
-        bot.find_element_by_xpath('//a[@class="ptntop" and @role="menuitem" and @href="https://my.concordia.ca/psp/upprpr9/EMPLOYEE/EMPL/s/WEBLIB_CONCORD.CU_SIS_INFO.FieldFormula.IScript_Campus_Student_Trans?FolderPath=PORTAL_ROOT_OBJECT.CU_MY_STUD_CENTRE.CAMPUS_STUDENT_TRANSCRIPT&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder"]').click()
-        time.sleep(4)
 
         # Radio button
         bot.switch_to.frame(bot.find_element_by_name('TargetContent'))
@@ -70,6 +79,10 @@ class GradeBot():
             bot.find_element_by_xpath("//input[@id='SSR_DUMMY_RECV1$sels$9$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
         elif semester == 'Fall 2016':
             bot.find_element_by_xpath("//input[@id='SSR_DUMMY_RECV1$sels$10$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
+        else:
+            print('Invalid semester')
+            print('Re-run the program.')
+            sys.exit(1)
         
         # Continue
         bot.find_element_by_xpath('//input[@class="PSPUSHBUTTON"][@name="DERIVED_SSS_SCT_SSR_PB_GO"][@type="button"]').click()
@@ -84,7 +97,7 @@ class GradeBot():
         with open('page.html', 'w') as f:
             f.write(bot.page_source)
 
-        site = '/Users/Matteo/Github/grade-fetcher/page.html'
+        site = os.getcwd() + '/page.html'
         page = open(site)
         soup = BeautifulSoup(page.read(), 'lxml')
         os.remove('page.html')

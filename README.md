@@ -2,9 +2,34 @@
 
 App that takes in any Concordia student ID, password and semester from Fall 2016 to Winter 2020 and outputs what is typically seen in the "View My Grades" section of the myconcordia website.
 
-## TODO
-* Exception handling for username, password and semesters
-* Generalization of filepaths (`os.join()`, etc.)
+## Requirements
+
+You will need to install geckodriver for access to the "HTTP API described by the WebDriver protocol to communicate with Gecko browsers, such as Firefox." 
+
+Having the Homebrew package manager will make things easier. Install by running the following (Mac):
+
+```bash
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+$ brew install geckodriver
+```
+
+or via this link (Windows/Linux):
+
+|OS|Link|
+|--|--|
+|Windows 32 bit| [mozilla/geckodriver/win32.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-win32.zip)|
+|Windows 64 bit| [mozilla/geckodriver/win64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz)|
+|Linux 32 bit| [mozilla/geckodriver/linux32.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux32.tar.gz)|
+|Linux 64 bit| [mozilla/geckodriver/linux64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz)|
+
+#### Python Packages
+* selenium
+* getpass
+* bs4
+* pandas
+* os
+* time
+* sys
 
 ## Usage
 
