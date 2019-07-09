@@ -84,7 +84,7 @@ class GradeBot():
         with open('page.html', 'w') as f:
             f.write(bot.page_source)
 
-        site = '/Users/Matteo/Github/pyproj/gradebot/page.html'
+        site = '/Users/Matteo/Github/grade-fetcher/page.html'
         page = open(site)
         soup = BeautifulSoup(page.read(), 'lxml')
         os.remove('page.html')
