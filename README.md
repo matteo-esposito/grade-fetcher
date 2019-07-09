@@ -14,18 +14,18 @@ $ python app.py
 Enter Concordia username and password when prompted. (Password is hidden during input.)
 
 <p align="center">
-  <img src="/assets/1.png" height="299" width="445">
+  <img src="/assets/1.png" height="449" width="668">
 </p>
 
 Enter desired semester. (Fall 2016 to Winter 2020 inclusive)
 
 <p align="center">
-  <img src="/assets/2.png" height="299" width="445">
+  <img src="/assets/2.png" height="449" width="668">
 </p>
 
 See grades!
 
 <p align="center">
-  <img src="/assets/3.png" height="299" width="445">
+  <img src="/assets/3.png" height="449" width="668">
 </p>
 
