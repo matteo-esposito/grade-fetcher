@@ -2,6 +2,10 @@
 
 App that takes in any Concordia student ID, password and semester from Fall 2016 to Winter 2020 and outputs what is typically seen in the "View My Grades" section of the myconcordia website.
 
+<p align="center">
+  <img src="/assets/3.png" height="449" width="668">
+</p>
+
 ## Requirements
 
 #### Geckodriver
