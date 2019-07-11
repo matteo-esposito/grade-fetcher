@@ -19,7 +19,7 @@ class GradeBot():
         self.username = username
         self.password = password
         opts = webdriver.FirefoxOptions()
-        opts.headless = False
+        opts.headless = True
         self.bot = webdriver.Firefox(options=opts)
 
     def login(self):
