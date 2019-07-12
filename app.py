@@ -159,7 +159,7 @@ class GradeBot():
 
         # Fixing missing class name in cell (1, 1)
         dist_df.Class = dist_df.Class.shift(-1)
-        dist_df.Class.loc[dist_df.shape[0]] = dist_df.Class[grades_df.shape[0]-1]
+        dist_df.Class.loc[dist_df.shape[0]] = grades_df.Class[grades_df.shape[0]+1]
                 
         print(grades_df.to_string(index=False) + '\n\n' + dist_df.to_string(index=False) + '\n')
     
