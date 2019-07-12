@@ -28,6 +28,8 @@ class GradeBot():
         bot.get("https://my.concordia.ca/psp/upprpr9/?cmd=login&languageCd=ENG")
         time.sleep(1)
 
+        print("Logging in...")
+
         # Locate and populate user and pwd fields.
         user_field = bot.find_element_by_class_name('form_login_username')
         pwd_field = bot.find_element_by_class_name('form_login_password')
@@ -36,7 +38,7 @@ class GradeBot():
         user_field.send_keys(self.username)
         pwd_field.send_keys(self.password)
         pwd_field.send_keys(Keys.RETURN)
-        time.sleep(5)
+        time.sleep(6)
 
         if bot.current_url == 'https://my.concordia.ca/psp/upprpr9/EMPLOYEE/EMPL/h/?tab=CU_MY_FRONT_PAGE2':
             pass
@@ -53,6 +55,11 @@ class GradeBot():
         time.sleep(2)
 
     def goto_grades(self, semester):
+        """Get to grade section after clicking on the radio button corresponding to the user input for 'semester'.
+        
+        Arguments:
+            semester {String} -- Semester from Fall 2016 to Winter 2020. 
+        """
         bot = self.bot
 
         # Radio button
@@ -84,55 +91,89 @@ class GradeBot():
             print('Re-run the program.')
             sys.exit(1)
         
-        # Continue
+    def output_vmg(self):
+        """
+        Output what is seen at 'view my grades'
+        """
+        bot = self.bot
+
+        # GRADES
         bot.find_element_by_xpath('//input[@class="PSPUSHBUTTON"][@name="DERIVED_SSS_SCT_SSR_PB_GO"][@type="button"]').click()
         print("✓ " + semester + " grades fetched.")
-        
-    def console_log_grades(self):
-        bot = self.bot
-        print("Creating grade output...")
 
         # Save current url to html
         time.sleep(1.5)
-        with open('page.html', 'w') as f:
+        with open('grades.html', 'w') as f:
             f.write(bot.page_source)
-
-        site = os.getcwd() + '/page.html'
+        site = os.getcwd() + '/grades.html'
         page = open(site)
         soup = BeautifulSoup(page.read(), 'lxml')
-        os.remove('page.html')
+        os.remove('grades.html')
 
         # Parse
-        data = []
+        grades = []
         table = soup.find('table', {'class': 'PSLEVEL1GRIDWBO'})
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            cols = [ele.text.strip() for ele in cols]
+            grades.append([ele for ele in cols])
+
+        # Convert to dataframe
+        grades_df = pd.DataFrame(grades).drop([0])
+        unwanted = [x for x in range(6,len(grades_df.columns))]
+        grades_df = grades_df.drop(grades_df.columns[unwanted], axis=1)
+        grades_df = grades_df.drop([1])
+        grades_df.columns = ['Class', 'Description', 'Units', 'Grading', 'Letter Grade', 'Grade Points']
+        
+        # DISTRIBUTION
+        bot.find_element_by_xpath('//a[@class="PSHYPERLINK"][@id="ICTAB_1_54"]').click()
+        print('✓ ' + semester + " distribution fetched.\n")
+
+        time.sleep(1.5)
+        with open('dist.html', 'w') as f:
+            f.write(bot.page_source)
+
+        site = os.getcwd() + '/dist.html'
+        page = open(site)
+        soup = BeautifulSoup(page.read(), 'lxml')
+        os.remove('dist.html')
+
+        # Parse
+        dist = []
+        table = soup.find('table', {'class': 'PSLEVEL1GRID'})
         table_body = table.find('tbody')
 
         rows = table_body.find_all('tr')
         for row in rows:
             cols = row.find_all('td')
             cols = [ele.text.strip() for ele in cols]
-            data.append([ele for ele in cols]) # Get rid of empty values
+            dist.append([ele for ele in cols])
 
         # Convert to dataframe
-        df = pd.DataFrame(data).drop([0])
-        unwanted = [x for x in range(6,len(df.columns))]
-        df = df.drop(df.columns[unwanted], axis=1)
-        df = df.drop([1])
-        df.columns = ['Class', 'Description', 'Units', 'Grading', 'Letter Grade', 'Grade Points']
-        print()
-        print(df.to_string(index=False))
-        print()
+        dist_df = pd.DataFrame(dist).drop([0])
 
+        dist_df.insert(0, 'Class', grades_df.Class)
+        dist_df.columns = ['Class', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'FNS', 'R','NR']
+
+        # Fixing missing class name in cell (1, 1)
+        dist_df.Class = dist_df.Class.shift(-1)
+        dist_df.Class.loc[dist_df.shape[0]] = dist_df.Class[grades_df.shape[0]-1]
+                
+        print(grades_df.to_string(index=False) + '\n\n' + dist_df.to_string(index=False) + '\n')
+    
 if __name__ == '__main__':
-
     # Accept user input
     user = input('Username: ')
     pwd = getpass.getpass()
     checker = GradeBot(user, pwd)
-
-    # Fetch grades
+    
+    # Login and select semester
     checker.login()
     semester = input('Semester: ')
+
+    # Fetch grades
     checker.goto_grades(semester)
-    checker.console_log_grades()
+    checker.output_vmg()
     
