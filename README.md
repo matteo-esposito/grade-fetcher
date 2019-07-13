@@ -8,6 +8,10 @@ App that takes in any Concordia student ID, password and semester from Fall 2016
 
 ## Requirements
 
+#### Firefox
+
+[Install here](https://www.mozilla.org/en-CA/firefox/new/)
+
 #### Geckodriver
 You will need to install geckodriver for access to the "HTTP API described by the WebDriver protocol to communicate with Gecko browsers, such as Firefox." 
 
