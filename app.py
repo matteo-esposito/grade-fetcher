@@ -2,16 +2,16 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import getpass
 from bs4 import BeautifulSoup
-import pandas as pd 
+import pandas as pd
 import os
 import time
 import sys
 
-class GradeBot():
+class GradeBot:
     def __init__(self, username, password):
         """Gradebot! Your automated MyConcordia grade checker. For those stressful times
         where you are obsessively checking your grades that always seem to come out way later than expected :P
-        
+
         Arguments:
             username {string} -- MyConcordia username
             password {string} -- MyConcordia password
@@ -52,13 +52,13 @@ class GradeBot():
         bot.find_element_by_xpath('//a[@id="fldra_CU_MY_STUD_CENTRE" and @class="ptntop"]').click()
         time.sleep(2)
         bot.find_element_by_xpath('//a[@class="ptntop" and @role="menuitem" and @href="https://my.concordia.ca/psp/upprpr9/EMPLOYEE/EMPL/s/WEBLIB_CONCORD.CU_SIS_INFO.FieldFormula.IScript_Campus_Student_Trans?FolderPath=PORTAL_ROOT_OBJECT.CU_MY_STUD_CENTRE.CAMPUS_STUDENT_TRANSCRIPT&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder"]').click()
-        time.sleep(2)
+        time.sleep(4)
 
     def goto_grades(self, semester):
         """Get to grade section after clicking on the radio button corresponding to the user input for 'semester'.
-        
+
         Arguments:
-            semester {String} -- Semester from Fall 2016 to Winter 2020. 
+            semester {String} -- Semester from Fall 2016 to Winter 2020.
         """
         bot = self.bot
 
@@ -90,7 +90,7 @@ class GradeBot():
             print('Invalid semester')
             print('Re-run the program.')
             sys.exit(1)
-        
+
     def output_vmg(self):
         """
         Output what is seen at 'view my grades'
@@ -126,7 +126,7 @@ class GradeBot():
         grades_df = grades_df.drop(grades_df.columns[unwanted], axis=1)
         grades_df = grades_df.drop([1])
         grades_df.columns = ['Class', 'Description', 'Units', 'Grading', 'Letter Grade', 'Grade Points']
-        
+
         # DISTRIBUTION
         bot.find_element_by_xpath('//a[@class="PSHYPERLINK"][@id="ICTAB_1_54"]').click()
         print('✓ ' + semester + " distribution fetched.\n")
@@ -160,20 +160,20 @@ class GradeBot():
         # Fixing missing class name in cell (1, 1)
         dist_df.Class = dist_df.Class.shift(-1)
         dist_df.Class.loc[dist_df.shape[0]] = grades_df.Class[grades_df.shape[0]+1]
-                
+
         print(grades_df.to_string(index=False) + '\n\n' + dist_df.to_string(index=False) + '\n')
-    
+
 if __name__ == '__main__':
-    # Accept user input
+
+    # Accept user input for username, password and semester
     user = input('Username: ')
     pwd = getpass.getpass()
-    checker = GradeBot(user, pwd)
-    
-    # Login and select semester
-    checker.login()
     semester = input('Semester: ')
+    checker = GradeBot(user, pwd)
+
+    # Login
+    checker.login()
 
     # Fetch grades
     checker.goto_grades(semester)
     checker.output_vmg()
-    
