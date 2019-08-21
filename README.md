@@ -32,13 +32,7 @@ or via this link (Windows/Linux):
 |Linux 64 bit| [mozilla/geckodriver/linux64.zip](https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz)|
 
 #### Python Packages
-* selenium
-* getpass
-* bs4
-* pandas
-* os
-* time
-* sys
+See `requirements.txt`.
 
 ## Usage
 
