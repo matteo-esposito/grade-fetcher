@@ -3,7 +3,7 @@
 App that takes in any Concordia student ID, password and semester from Fall 2016 to Winter 2020 and outputs what is typically seen in the "View My Grades" section of the myconcordia website.
 
 <p align="center">
-  <img src="/assets/2.png" height="415" width="618">
+  <img src="/assets/2.png" height="623" width="927">
 </p>
 
 ## Requirements
@@ -49,14 +49,14 @@ $ cd grade-fetcher
 $ python app.py
 ```
 
-Enter Concordia username and password when prompted. (Password is hidden during input.)
+Enter Concordia username, password and desired semester when prompted. (Password is hidden during input.)
 
 <p align="center">
-  <img src="/assets/1.png" height="415" width="618">
+  <img src="/assets/1.png" height="623" width="927">
 </p>
 
 Get grades!
 
 <p align="center">
-  <img src="/assets/2.png" height="415" width="618">
+  <img src="/assets/2.png" height="623" width="927">
 </p>
