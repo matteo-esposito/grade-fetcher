@@ -266,7 +266,6 @@ if __name__ == '__main__':
     while True:
         # Instantiate bot with command-line-args
         checker = GradeBot(user, pwd)
-        semester = "Fall 2019"
 
         # Login
         checker.login()
