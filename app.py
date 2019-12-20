@@ -16,7 +16,8 @@ from email.mime.multipart import MIMEMultipart
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from datetime import datetime
+from configs.config import cfg
+from utils import timenow
 
 class GradeBot:
     def __init__(self, username, password):
@@ -80,48 +81,19 @@ class GradeBot:
         # Change semester view.
         bot.switch_to.frame(bot.find_element_by_name('TargetContent'))
         if not old_format:
-            bot.find_element_by_xpath('//input[@class="PSPUSHBUTTON"][@name="DERIVED_SSS_SCT_SSS_TERM_LINK"][@id="DERIVED_SSS_SCT_SSS_TERM_LINK"][@type="button"]').click()
+            bot.find_element_by_xpath('//input[@class="PSPUSHBUTTON"][@name="DERIVED_SSS_SCT_SSS_TERM_LINK"]'
+                                      '[@id="DERIVED_SSS_SCT_SSS_TERM_LINK"][@type="button"]').click()
             time.sleep(2)
 
-        # Radio button
-        # bot.switch_to.frame(bot.find_element_by_name('TargetContent'))
-        if semester == 'Winter 2020':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$0$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Fall 2019':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$1$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Summer 2019':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$2$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Winter 2019':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$3$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Fall 2018':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$4$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Summer 2018':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$5$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Winter 2018':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$6$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Fall 2017':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$7$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Summer 2017':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$8$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Winter 2017':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$9$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        elif semester == 'Fall 2016':
-            bot.find_element_by_xpath(
-                "//input[@id='SSR_DUMMY_RECV1$sels$10$$0'][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
-        else:
-            print('Invalid semester')
-            print('Re-run the program.')
+        # Semester selection
+        if semester not in cfg['semester_mapping'].keys():
+            print('Unsupported/invalid semester. Choose semester between Fall 2016 and Winter 2020.')
             sys.exit(1)
+
+        idval = cfg['semester_mapping'][semester]
+        chosen_id = "SSR_DUMMY_RECV1$sels$" + str(idval) + "$$0"
+        bot.find_element_by_xpath("//input[@id=" + "\'" + chosen_id + "\'" + "][@name='SSR_DUMMY_RECV1$sels$0'][@type='radio']").click()
+
 
     def output_vmg(self):
         """Output what is seen at 'view my grades' on myconcordia portal.
@@ -130,7 +102,6 @@ class GradeBot:
 
         # GRADES
         bot.find_element_by_xpath('//input[@class="PSPUSHBUTTON"][@name="DERIVED_SSS_SCT_SSR_PB_GO"][@type="button"]').click()
-        # print("✓ " + semester + " grades fetched.")
 
         # Save current url to html
         time.sleep(1.5)
@@ -162,7 +133,6 @@ class GradeBot:
         # DISTRIBUTION
         bot.find_element_by_xpath(
             '//a[@class="PSHYPERLINK"][@id="ICTAB_1_54"]').click()
-        # print('✓ ' + semester + " distribution fetched.\n")
 
         time.sleep(1.5)
         with open('dist.html', 'w') as f:
@@ -173,7 +143,7 @@ class GradeBot:
         soup = BeautifulSoup(page.read(), features="html.parser")
         os.remove('dist.html')
 
-        # Parse
+        # Parse distribution table
         dist = []
         table = soup.find('table', {'class': 'PSLEVEL1GRID'})
         table_body = table.find('tbody')
@@ -194,9 +164,6 @@ class GradeBot:
         dist_df.Class = dist_df.Class.shift(-1)
         dist_df.Class.loc[dist_df.shape[0]] = grades_df.Class[grades_df.shape[0]+1]
 
-        # print(grades_df.to_string(index=False) + '\n\n' +
-        #       dist_df.to_string(index=False) + '\n')
-
         bot.quit()
         return grades_df, dist_df
 
@@ -208,17 +175,15 @@ class GradeBot:
             distribution_table {dataframe} -- Grade distribution table
             bot_pwd {string} -- Sender email password
         """
-        email = "matteotestbot@gmail.com"
-        password = bot_pwd
-        send_to_email = "matteoesposito97@gmail.com"
-        subject = "New Grade!"
 
+        # General setup
         msg = MIMEMultipart()
-        msg['From'] = email
-        msg['To'] = send_to_email
-        msg['Subject'] = subject
+        msg['From'] = cfg['source_email']
+        msg['To'] = cfg['target_email']
+        msg['Subject'] = "New Grade!"
 
-        table1 = """\
+        # Structure the tables to be featured in the email.
+        table1 = """
         <html>
           <head></head>
           <body>
@@ -226,6 +191,15 @@ class GradeBot:
           </body>
         </html>
         """.format(grades_table.to_html())
+
+        whitespace = """
+        <html>
+          <head></head>
+          <body>
+            
+          </body>
+        </html>
+        """
 
         table2 = """\
         <html>
@@ -235,23 +209,17 @@ class GradeBot:
           </body>
         </html>
         """.format(distribution_table.to_html())
-
         msg.attach(MIMEText(table1, 'html'))
+        msg.attach(MIMEText(whitespace, 'html'))
         msg.attach(MIMEText(table2, 'html'))
 
+        # Send the message and quit.
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
-        server.login(email, password)
+        server.login(msg['From'], bot_pwd)
         text = msg.as_string()  # You now need to convert the MIMEMultipart object to a string to send
-        server.sendmail(email, send_to_email, text)
+        server.sendmail(msg['From'], msg['To'], text)
         server.quit()
-
-def timenow():
-    """Console log current time.
-    """
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    return now.strftime("[%H:%M:%S] ")
 
 if __name__ == '__main__':
 
@@ -264,15 +232,17 @@ if __name__ == '__main__':
     old_grades = pd.DataFrame({"Letter Grade": ["", "", "", ""]})
 
     while True:
-        # Instantiate bot with command-line-args
+        # Instantiate bot with command-line-args and login
         checker = GradeBot(user, pwd)
-
-        # Login
         checker.login()
 
         # Fetch grades
         checker.goto_grades(semester)
         grades, distribution = checker.output_vmg()
+
+        # Print tables depending on config option.
+        if cfg['options']['console_log_tables']:
+            print(grades.to_string(index=False) + '\n\n' + distribution.to_string(index=False) + '\n')
 
         # Compare to previous version and send email if different.
         if list(grades['Letter Grade']) != list(old_grades['Letter Grade']):
@@ -285,4 +255,4 @@ if __name__ == '__main__':
         old_grades = grades.copy()
 
         # Run every 30 min
-        time.sleep(1800)
+        time.sleep(cfg['options']['time_interval'])

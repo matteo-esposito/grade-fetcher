@@ -1,0 +1,19 @@
+source_email: "matteotestbot@gmail.com"
+target_email: "matteoesposito97@gmail.com"
+
+options:
+  time_interval: 1800 # Seconds
+  console_log_tables: True
+
+semester_mapping:
+  'Winter 2020': 0
+  'Fall 2019': 1
+  'Summer 2019': 2
+  'Winter 2019': 3
+  'Fall 2018': 4
+  'Summer 2018': 5
+  'Winter 2018': 6
+  'Fall 2017': 7
+  'Summer 2017': 8
+  'Winter 2017': 9
+  'Fall 2016': 10
