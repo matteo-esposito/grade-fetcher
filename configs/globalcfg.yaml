@@ -2,6 +2,7 @@ source_email: "matteotestbot@gmail.com"
 target_email: "matteoesposito97@gmail.com"
 
 options:
+  email_notification: False
   time_interval: 1800 # Seconds
   console_log_tables: True
 

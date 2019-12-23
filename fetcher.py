@@ -245,11 +245,14 @@ if __name__ == '__main__':
             print(grades.to_string(index=False) + '\n\n' + distribution.to_string(index=False) + '\n')
 
         # Compare to previous version and send email if different.
-        if list(grades['Letter Grade']) != list(old_grades['Letter Grade']):
-            checker.send_message(grades, distribution, bot_pwd)
-            print(timenow() + "******Email sent.")
+        if cfg['options']['email_notification']:
+        	if list(grades['Letter Grade']) != list(old_grades['Letter Grade']):
+        		checker.send_message(grades, distribution, bot_pwd)
+        		print(timenow() + "******Email sent.")
+        	else:
+        		print(timenow() + "No changes detected.")
         else:
-            print(timenow() + "No changes detected.")
+        	sys.exit(0)
 
         # Store copy of previous grade matrix for future comparisons.
         old_grades = grades.copy()
