@@ -1,5 +1,7 @@
 # Concordia Grade Fetcher
 
+**Note: Working in Jan 2020.**
+
 App that takes in any Concordia student ID, password and semester from Fall 2016 to Winter 2020 and outputs what is typically seen in the "View My Grades" section of the myconcordia website.
 
 <p align="center">

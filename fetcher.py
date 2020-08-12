@@ -226,7 +226,7 @@ if __name__ == '__main__':
     # Accept user input for username, passwords and semester
     user = input('Username: ')
     pwd = getpass.getpass()
-    bot_pwd = getpass.getpass()
+    bot_pwd = getpass.getpass() #d7
     semester = input('Semester: ')
     checker = GradeBot(user, pwd)
     old_grades = pd.DataFrame({"Letter Grade": ["", "", "", ""]})
